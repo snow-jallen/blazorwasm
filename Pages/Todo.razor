@@ -1,4 +1,5 @@
 @page "/todo"
+@inject IJSRuntime JSRuntime
 
 <h1>Todo (@todos.Count(todo=>!todo.IsDone))</h1>
 
@@ -12,20 +13,37 @@
     }
 </ul>
 
-<input placeholder="Something to do" @bind="newTodo" />
+<input @ref="todoBox" placeholder="Something to do" @bind-value="NewTodo" @bind-value:event="oninput" />
 <button @onclick="AddTodo">Add todo</button>
+<p>@foreach(var line in Output)
+    {
+        <span>NewLine: @line <br/></span>
+    }
+</p>
 
 @code
 {
+    ElementReference todoBox;
     private IList<TodoItem> todos = new List<TodoItem>();
     string newTodo;
+    public string NewTodo
+    {
+        get{return newTodo;}
+        set
+        {
+            newTodo = value;
+            Output.Add($"New value: {value}");
+        }
+    }
+    public List<string> Output{get;set;} = new List<string>();
 
-    private void AddTodo()
+    private async Task AddTodo()
     {
         if(!string.IsNullOrWhiteSpace(newTodo))
         {
             todos.Add(new TodoItem{Title=newTodo});
-            newTodo=string.Empty;
+            NewTodo=string.Empty;
+            await JSRuntime.InvokeVoidAsync("exampleJsFunctions.focusElement", todoBox);
         }
     }
 }
