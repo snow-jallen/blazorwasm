@@ -7,6 +7,7 @@ namespace blazorwasm
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<WeatherForecastService>();
         }
 
         public void Configure(IComponentsApplicationBuilder app)
